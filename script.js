@@ -50,14 +50,16 @@ function updateSavedColumns() {
 
 // Create DOM Elements for each list item
 function createItemEl(columnEl, column, item, index) {
-
   // List Item
   const listEl = document.createElement('li');
   listEl.classList.add('drag-item');
   listEl.textContent = item;
   listEl.draggable = true;
   listEl.setAttribute('ondragstart', 'drag(event)');
-  listEl.co
+  listEl.contentEditable = true;
+  listEl.id = index;
+  listEl.setAttribute('onfocusout', `updateItem(${index}, ${column})`);
+
   //Append
   columnEl.appendChild(listEl);
 
@@ -78,24 +80,35 @@ function updateDOM() {
   // Progress Column
   progressList.textContent = '';
   progressListArray.forEach((progressItem, index) => {
-    createItemEl(progressList, 0, progressItem, index);
+    createItemEl(progressList, 1, progressItem, index);
   });
 
   // Complete Column
   completeList.textContent = '';
   completeListArray.forEach((completeItem, index) => {
-    createItemEl(completeList, 0, completeItem, index);
+    createItemEl(completeList, 2, completeItem, index);
   });
 
   // On Hold Column
   onHoldList.textContent = '';
   onHoldListArray.forEach((onHoldItem, index) => {
-    createItemEl(onHoldList, 0, onHoldItem, index);
+    createItemEl(onHoldList, 3, onHoldItem, index);
   });
 
   // Run getSavedColumns only once, Update Local Storage
   updatedOnLoad = true;
   updateSavedColumns();
+}
+
+//Update Item - delete if necessary or update array value
+function updateItem(id, column) {
+  const selectedArray = listArrays[column];
+  const selectedColumnEl = listColumns[column].children;
+  if(!selectedColumnEl[id].textContent) {
+    delete selectedArray[id];
+  }
+  console.log(selectedArray);
+  updateDOM();
 }
 
 //Show add input Box
